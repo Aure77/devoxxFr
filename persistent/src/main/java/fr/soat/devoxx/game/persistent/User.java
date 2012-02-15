@@ -123,9 +123,9 @@ public class User implements Serializable {
 	public User() {
 	}
 
-	public User(String name, String mail) {
+	public User(String urlId, String mail) {
 		this.mail = mail;
-		this.fullname = name;
+		this.urlId = urlId;
 	}
 
 	@Override
