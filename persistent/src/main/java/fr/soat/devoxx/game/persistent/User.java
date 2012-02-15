@@ -69,13 +69,21 @@ public class User implements Serializable {
 	private String token = StringUtils.EMPTY;
 
 	@PrePersist
-	void generateUserToken() {
-		this.setToken(UserUtils.INSTANCE.generateToken());
+	void onPrePersist() {
+		generateUserToken();
+		generateUsername();
 	}
 	
-	@PrePersist
 	@PreUpdate
-	void generateUsername() {
+	void onPreUpdate() {
+		generateUsername();
+	}
+	
+	private void generateUserToken() {
+		this.setToken(UserUtils.INSTANCE.generateToken());
+	}
+
+	private void generateUsername() {
 		if(StringUtils.isEmpty(fullname))
 			this.setFullname(UserUtils.INSTANCE.generateRandomUsername());
 	}
