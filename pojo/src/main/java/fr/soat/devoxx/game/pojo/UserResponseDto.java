@@ -33,13 +33,24 @@ import java.io.Serializable;
  */
 @XmlRootElement(name = "userResponse")
 public class UserResponseDto implements Serializable {
-    private String token;
     
+    private String urlId;
+	
     private String name;
 
     private String mail;
+    
+    private String token;    
 
-    public String getToken() {
+    public String getUrlId() {
+    	return urlId;
+    }
+
+	public void setUrlId(String urlId) {
+    	this.urlId = urlId;
+    }
+
+	public String getToken() {
         return token;
     }
 
@@ -75,6 +86,7 @@ public class UserResponseDto implements Serializable {
     public String toString() {
         return "UserResponseDto{" +
                 "token='" + token + '\'' +
+                ", urlId='" + urlId + '\'' +
                 ", name='" + name + '\'' +
                 ", mail='" + mail + '\'' +
                 '}';

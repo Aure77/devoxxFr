@@ -145,7 +145,7 @@ public class AdminUserService {
             em.getTransaction().commit();
             LOGGER.debug("User creation successful: {}", userRequestDto);
 
-            this.gameUserDataManager.registerUser(userRequestDto.getName());
+            this.gameUserDataManager.registerUser(userRequestDto.getUrlId());
 
             return dozerMapper.map(user, UserResponseDto.class);
         } finally {
@@ -153,22 +153,22 @@ public class AdminUserService {
         }
     }
 
-    @Path("/{username}")
+    @Path("/{urlId}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public UserResponseDto getUser(@PathParam("username") String userName) {
+    public UserResponseDto getUser(@PathParam("urlId") String urlId) {
         try {
             init();
 //			List<User> users = getUsers(em, userName);
-            User user = getUserByName(userName);
+            User user = getUserById(urlId);
 
             if (null != user) {
-                LOGGER.debug("get user {} successful", userName);
+                LOGGER.debug("get user {} successful", urlId);
                 UserResponseDto response = dozerMapper.map(user, UserResponseDto.class);
                 response.setToken(null);
                 return response;
             } else {
-                LOGGER.debug("get user {} failed: not found", userName);
+                LOGGER.debug("get user {} failed: not found", urlId);
                 throw new WebApplicationException(Status.NOT_FOUND);
             }
         } catch (PersistenceException e) {
@@ -179,31 +179,31 @@ public class AdminUserService {
         }
     }
 
-    @Path("/{username}/games")
+    @Path("/{urlId}/games")
     @DELETE
-    public void cleanUserGames(@PathParam("username") String userName) {
-        this.gameUserDataManager.cleanUser(userName);
+    public void cleanUserGames(@PathParam("urlId") String urlId) {
+        this.gameUserDataManager.cleanUser(urlId);
     }
 
-    @Path("/{username}")
+    @Path("/{urlId}")
     @DELETE
-    public void deleteUser(@PathParam("username") String userName) {
+    public void deleteUser(@PathParam("urlId") String urlId) {
         try {
             init();
 //			List<User> users = getUsers(em, userName);
-            User user = getUserByName(userName);
+            User user = getUserById(urlId);
 
             if (null != user) {
                 em.getTransaction().begin();
                 em.remove(user);
                 em.getTransaction().commit();
             } else {
-                LOGGER.debug("delete user {} failed: not found", userName);
+                LOGGER.debug("delete user {} failed: not found", urlId);
                 throw new WebApplicationException(Status.NOT_FOUND);
             }
-            this.gameUserDataManager.destroyUser(userName);
+            this.gameUserDataManager.destroyUser(urlId);
 
-            LOGGER.debug("delete user {} successful", userName);
+            LOGGER.debug("delete user {} successful", urlId);
         } catch (PersistenceException e) {
             LOGGER.debug("delete user failed: PersistenceException", e);
 //			throw new WebApplicationException(Status.NOT_FOUND);
@@ -221,9 +221,9 @@ public class AdminUserService {
                  .setParameter("name", userName).getResultList();
      }*/
 
-    private User getUserByName(String userName) throws PersistenceException {
-        return (User) em.createQuery("select g from User g where g.name = :name")
-                .setParameter("name", userName).getSingleResult();
+    private User getUserById(String urlId) throws PersistenceException {
+        return (User) em.createQuery("select g from User g where g.urlId = :urlId")
+                .setParameter("urlId", urlId).getSingleResult();
 //        CriteriaQuery<User> criteriaQuery = createSimpleUserCriteriaQuery(em,
 //                userName);
 //                return em.createQuery(criteriaQuery).setParameter("name",

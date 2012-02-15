@@ -90,17 +90,19 @@ public class UserTest {
     @Test
     public void theDbReadShouldSuccess() {
         User user = (User) em.createQuery(
-                "select g from User g where g.name = :name")
-                .setParameter("name", "toto").getSingleResult();
+                "select g from User g where g.urlId = :urlId")
+                .setParameter("urlId", "toto").getSingleResult();
         assertNotNull(user);
         assertEquals(user.getMail(), "toto@toto.com");
-        assertEquals(user.getName(), "toto");
+        assertEquals(user.getUrlId(), "toto");
 //        System.out.println("Query returned: " + user);
     }
 
-    @Test
+    @Test @Ignore("Email is not mandatory")
     public void anInvalidEmailShouldBeChecked() {
-        User user = new User("toto", "totototo.com");
+        User user = new User();
+        user.setUrlId("toto");
+        user.setMail("totototo.com");
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         assertEquals(1, constraintViolations.size());
         assertEquals("{javax.validation.constraints.Pattern.message}", constraintViolations.iterator().next().getMessageTemplate());
@@ -113,7 +115,9 @@ public class UserTest {
 
     @Test
     public void anInvalidNameShouldBeChecked() {
-        User user = new User("to", "toto@toto.com");
+        User user = new User();
+        user.setUrlId("to");
+        user.setMail("toto@toto.com");
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         assertEquals(1, constraintViolations.size());
         assertEquals("{javax.validation.constraints.Size.message}", constraintViolations.iterator().next().getMessageTemplate());
@@ -126,7 +130,9 @@ public class UserTest {
 
     @Test
     public void anValidUserShouldSuccess() {
-        User user = new User("toto", "toto@toto.com");
+        User user = new User();
+        user.setUrlId("toto");
+        user.setMail("toto@toto.com");
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         assertEquals(0, constraintViolations.size());
     }

@@ -77,7 +77,7 @@ public class GameUserDataManagerTest {
     public void addGameWithAnUnknownUserShouldFail() throws Exception {
         //given
         GameUserData gameUserData = new GameUserData();
-        gameUserData.setName("use");
+        gameUserData.setUserId("use");
 
         Datastore ds = mock(Datastore.class);
         Query<GameUserData> query = mock(Query.class);
@@ -102,7 +102,7 @@ public class GameUserDataManagerTest {
     public void addGameShouldSuccess() throws StorageException {
         //given
         GameUserData gameUserData = mock(GameUserData.class);
-        when(gameUserData.getName()).thenReturn("user1");
+        when(gameUserData.getUserId()).thenReturn("user1");
 
         Datastore ds = mock(Datastore.class);
         Query<GameUserData> query = mock(Query.class);
@@ -131,7 +131,7 @@ public class GameUserDataManagerTest {
     public void getGamesShouldReturnAllPlayedGamesForASpecificUser() throws StorageException {
         //given
         GameUserData gameUserData = mock(GameUserData.class);
-        when(gameUserData.getName()).thenReturn("user1");
+        when(gameUserData.getUserId()).thenReturn("user1");
 
         Datastore ds = mock(Datastore.class);
         Query<GameUserData> query = mock(Query.class);
@@ -175,7 +175,7 @@ public class GameUserDataManagerTest {
     public void getGamesByResponseTypeShouldSuccess() throws StorageException {
         //given
         GameUserData gameUserData = mock(GameUserData.class);
-        when(gameUserData.getName()).thenReturn("user1");
+        when(gameUserData.getUserId()).thenReturn("user1");
 
 //        GameUserData gameUserData2 = mock(GameUserData.class);
 //        when(gameUserData2.getName()).thenReturn("user2");

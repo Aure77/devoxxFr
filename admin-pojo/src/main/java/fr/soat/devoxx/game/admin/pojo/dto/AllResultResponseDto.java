@@ -65,7 +65,7 @@ public class AllResultResponseDto {
 			Iterator<ResultResponseDto> iterator = gameResults.iterator();
 			while (iterator.hasNext()) {
 				ResultResponseDto resultResponse = iterator.next();
-				if (StringUtils.isEmpty(resultResponse.getUsername())) {
+				if (StringUtils.isEmpty(resultResponse.getUserId())) {
 					// a GameResult without username is considered invalid
 					iterator.remove();
 				}

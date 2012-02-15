@@ -28,6 +28,7 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -37,27 +38,31 @@ import org.apache.commons.lang.StringUtils;
 import fr.soat.devoxx.game.persistent.util.UserUtils;
 
 /**
- * User: khanh
- * Date: 20/12/11
- * Time: 00:30
+ * User: khanh Date: 20/12/11 Time: 00:30
  */
-//@XmlRootElement(name = "user")
+// @XmlRootElement(name = "user")
 @Entity
 public class User implements Serializable {
-//    @Id
-//    @GeneratedValue
-//    private int id;
+	// @Id
+	// @GeneratedValue
+	// private int id;
 
-    @Id
-    @NotNull
-    @Size(min = 4)
-    private String name;
-
-    //	@Pattern(regexp = "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b")
-    //	@Pattern(regexp = "[\\w-]+@([\\w-]+\\.)+[\\w-]+")
-    //	@Email // Hibernate
+	@Id
 	@NotNull
-	@Pattern(regexp = "[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*\\.[A-Za-z]{2,}")
+	@Size(min = 4)
+	private String urlId;
+
+	// @Id
+	// @NotNull
+	// @Size(min = 4)
+	private String fullname;
+
+	// @Pattern(regexp = "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b")
+	// @Pattern(regexp = "[\\w-]+@([\\w-]+\\.)+[\\w-]+")
+	// @Email // Hibernate
+	// @NotNull
+	// @Pattern(regexp =
+	// "[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*\\.[A-Za-z]{2,}")
 	private String mail;
 
 	@NotNull
@@ -67,48 +72,58 @@ public class User implements Serializable {
 	void generateUserToken() {
 		this.setToken(UserUtils.INSTANCE.generateToken());
 	}
+	
+	@PrePersist
+	@PreUpdate
+	void generateUsername() {
+		if(StringUtils.isEmpty(fullname))
+			this.setFullname(UserUtils.INSTANCE.generateRandomUsername());
+	}
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+	public void setToken(String token) {
+		this.token = token;
+	}
 
-    public String getToken() {
-        return token;
-    }
+	public String getToken() {
+		return token;
+	}
 
-    public String getMail() {
-        return this.mail;
-    }
+	public String getMail() {
+		return this.mail;
+	}
 
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
 
-    public String getName() {
-        return this.name;
-    }
+	public String getFullname() {
+		return this.fullname;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
 
-    public User() {
-    }
+	public String getUrlId() {
+		return urlId;
+	}
 
-    public User(String name, String mail) {
-        this.mail = mail;
-        this.name = name;
-    }
+	public void setUrlId(String urlId) {
+		this.urlId = urlId;
+	}
 
-    @Override
-    public String toString() {
-        return "User{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-                "name='" + name + '\'' +
-                ", mail='" + mail + '\'' +
-                ((token == StringUtils.EMPTY) ? ", token=<none>" : (", token='" + token + '\'')) +
-                '}';
-    }
-    
+	public User() {
+	}
+
+	public User(String name, String mail) {
+		this.mail = mail;
+		this.fullname = name;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" + "urlId='" + urlId + '\'' + "fullname='" + fullname + '\'' + ", mail='" + mail + '\''
+		        + (StringUtils.isEmpty(token) ? ", token=<none>" : (", token='" + token + '\'')) + '}';
+	}
+
 }
