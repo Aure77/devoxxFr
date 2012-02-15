@@ -85,7 +85,7 @@ public class GameUserDataManagerTest {
 
         gameUserDataManager.ds = ds;
         when(query.get()).thenReturn(null);
-        when(query.field("name")).thenReturn(fieldEnd);
+        when(query.field("userId")).thenReturn(fieldEnd);
         when(fieldEnd.equal(anyString())).thenReturn(query);
         when(ds.find(GameUserData.class)).thenReturn(query);
 
@@ -110,7 +110,7 @@ public class GameUserDataManagerTest {
 
         gameUserDataManager.ds = ds;
         when(query.get()).thenReturn(gameUserData);
-        when(query.field("name")).thenReturn(fieldEnd);
+        when(query.field("userId")).thenReturn(fieldEnd);
         when(fieldEnd.equal(anyString())).thenReturn(query);
         when(ds.find(GameUserData.class)).thenReturn(query);
 
@@ -140,7 +140,7 @@ public class GameUserDataManagerTest {
         FieldEnd fieldEnd2 = mock(FieldEnd.class);
 
         gameUserDataManager.ds = ds;
-        when(query.field("name")).thenReturn(fieldEnd);
+        when(query.field("userId")).thenReturn(fieldEnd);
         when(fieldEnd.equal("user1")).thenReturn(query2);
         when(query2.get()).thenReturn(gameUserData);
         when(ds.find(GameUserData.class)).thenReturn(query);
@@ -187,7 +187,7 @@ public class GameUserDataManagerTest {
         FieldEnd fieldEnd2 = mock(FieldEnd.class);
 
         gameUserDataManager.ds = ds;
-        when(query.field("name")).thenReturn(fieldEnd);
+        when(query.field("userId")).thenReturn(fieldEnd);
         when(fieldEnd.equal("user1")).thenReturn(query2);
         when(query2.field("games.type")).thenReturn(fieldEnd2);
         when(fieldEnd2.contains("SUCCESS")).thenReturn(query2);

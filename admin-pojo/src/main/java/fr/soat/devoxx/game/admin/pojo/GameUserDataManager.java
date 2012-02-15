@@ -85,7 +85,7 @@ public class GameUserDataManager {
     public List<Game> getGamesByResultType(String urlId, ResponseType responseType) {
         List<Game> result = new ArrayList<Game>();
         if (ds != null) {
-            List<GameUserData> gameUserDatas = ds.find(GameUserData.class).field("urlId").equal(urlId).field("games.type").contains(responseType.name()).asList();
+            List<GameUserData> gameUserDatas = ds.find(GameUserData.class).field("userId").equal(urlId).field("games.type").contains(responseType.name()).asList();
             for (GameUserData gameUserData : gameUserDatas) {
                 for (Game game : gameUserData.getGames()) {
                     if (game.getType() == responseType) {
@@ -103,7 +103,7 @@ public class GameUserDataManager {
         Game result = null;
         GameUserData gameUserData = null;
         if (ds != null) {
-            gameUserData = ds.find(GameUserData.class).field("urlId").equal(urlId).field("games.id").equal(gameId).get();
+            gameUserData = ds.find(GameUserData.class).field("userId").equal(urlId).field("games.id").equal(gameId).get();
         } else {
             LOGGER.error("unable to access to mongoDb: datastore is unknown: ");
         }
@@ -123,7 +123,7 @@ public class GameUserDataManager {
         List<Game> result = new ArrayList<Game>();
         GameUserData gameUserData = null;
         if (ds != null) {
-            gameUserData = ds.find(GameUserData.class).field("urlId").equal(urlId).get();
+            gameUserData = ds.find(GameUserData.class).field("userId").equal(urlId).get();
         } else {
             LOGGER.error("unable to access to mongoDb: datastore is unknown: ");
         }
