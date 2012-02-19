@@ -53,6 +53,9 @@ import static org.junit.Assert.*;
 @PowerMockIgnore("javax.management.*")
 public class AdminUserServiceTest {
     private AdminUserService adminUserService;
+    
+    public static final Long TEST_USERID = 1L;
+    public static final String TEST_URLID = "http://toto.myopenid.com/";
 
     @Before
     public void init() {
@@ -65,13 +68,13 @@ public class AdminUserServiceTest {
 //        adminUserService.em = emf.createEntityManager();
 
 //        adminUserService = new UserService("devoxx");
-        adminUserService.deleteUser("toto");
+        adminUserService.deleteUser(TEST_USERID);
     }
 
     @Test
     public void createUserShouldReturnAToken() throws InvalidUserException {
 		UserRequestDto userRequestDto = new UserRequestDto();
-		userRequestDto.setUrlId("toto");
+		userRequestDto.setUrlId(TEST_URLID);
 		userRequestDto.setMail("toto@gmail.com");
 		UserResponseDto user = adminUserService.createUser(userRequestDto);
 		assertNotNull(user);
@@ -82,7 +85,7 @@ public class AdminUserServiceTest {
     @Test(expected = InvalidUserException.class) @Ignore("Email is not mandatory")
     public void createUserWithInvalidMailShouldThrowException() throws InvalidUserException {
         UserRequestDto user = new UserRequestDto();
-        user.setUrlId("toto");
+        user.setUrlId(TEST_URLID);
         user.setMail("toto@gmailcom");
         adminUserService.createUser(user);
     }
@@ -90,7 +93,7 @@ public class AdminUserServiceTest {
     @Test(expected = InvalidUserException.class) @Ignore("Email is not mandatory")
     public void createUserWithInvalidMail2ShouldThrowException() throws InvalidUserException {
 		UserRequestDto user = new UserRequestDto();
-		user.setUrlId("toto");
+		user.setUrlId(TEST_URLID);
 		user.setMail("totogmailcom");
 		adminUserService.createUser(user);
     }
@@ -98,13 +101,13 @@ public class AdminUserServiceTest {
     @Test(expected = InvalidUserException.class) @Ignore("Email is not mandatory")
     public void createUserWithInvalidMail3ShouldThrowException() throws InvalidUserException {
         UserRequestDto user = new UserRequestDto();
-        user.setUrlId("toto");
+        user.setUrlId(TEST_URLID);
         user.setMail(null);
         adminUserService.createUser(user);
     }
 
     @Test(expected = InvalidUserException.class)
-    public void createUserWithInvalidNameShouldThrowException() throws InvalidUserException {
+    public void createUserWithInvalidUrlIdShouldThrowException() throws InvalidUserException {
         UserRequestDto user = new UserRequestDto();
         user.setUrlId("to");
         user.setMail("toto@gmailcom");
@@ -112,7 +115,7 @@ public class AdminUserServiceTest {
     }
 
     @Test(expected = InvalidUserException.class)
-    public void createUserWithInvalidName2ShouldThrowException() throws InvalidUserException {
+    public void createUserWithInvalidUrlId2ShouldThrowException() throws InvalidUserException {
         UserRequestDto user = new UserRequestDto();
         user.setUrlId(null);
         user.setMail("toto@gmailcom");
@@ -122,12 +125,12 @@ public class AdminUserServiceTest {
     @Test
     public void generateAValidUserShouldSuccessAndBePersist() throws InvalidUserException {
         UserRequestDto userRequest = new UserRequestDto();
-        userRequest.setUrlId("toto");
+        userRequest.setUrlId(TEST_URLID);
         userRequest.setMail("toto@gmail.com");
         UserResponseDto user = adminUserService.createUser(userRequest);
         assertNotNull(user);
 //        assertTrue(user.getToken().length() == 10);
-        assertEquals("toto", adminUserService.getUser("toto").getUrlId());
+        assertEquals(TEST_URLID, adminUserService.getUser(user.getId()).getUrlId());
     }
 }
 

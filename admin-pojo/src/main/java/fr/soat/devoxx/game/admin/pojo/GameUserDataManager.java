@@ -82,10 +82,10 @@ public class GameUserDataManager {
         }
     }
 
-    public List<Game> getGamesByResultType(String urlId, ResponseType responseType) {
+    public List<Game> getGamesByResultType(Long userId, ResponseType responseType) {
         List<Game> result = new ArrayList<Game>();
         if (ds != null) {
-            List<GameUserData> gameUserDatas = ds.find(GameUserData.class).field("userId").equal(urlId).field("games.type").contains(responseType.name()).asList();
+            List<GameUserData> gameUserDatas = ds.find(GameUserData.class).field("userId").equal(userId).field("games.type").contains(responseType.name()).asList();
             for (GameUserData gameUserData : gameUserDatas) {
                 for (Game game : gameUserData.getGames()) {
                     if (game.getType() == responseType) {
@@ -99,11 +99,11 @@ public class GameUserDataManager {
         return result;
     }
 
-    public Game getGameById(String urlId, int gameId) {
+    public Game getGameById(Long userId, int gameId) {
         Game result = null;
         GameUserData gameUserData = null;
         if (ds != null) {
-            gameUserData = ds.find(GameUserData.class).field("userId").equal(urlId).field("games.id").equal(gameId).get();
+            gameUserData = ds.find(GameUserData.class).field("userId").equal(userId).field("games.id").equal(gameId).get();
         } else {
             LOGGER.error("unable to access to mongoDb: datastore is unknown: ");
         }
@@ -119,11 +119,11 @@ public class GameUserDataManager {
         return result;
     }
 
-    public List<Game> getGames(String urlId) {
+    public List<Game> getGames(Long userId) {
         List<Game> result = new ArrayList<Game>();
         GameUserData gameUserData = null;
         if (ds != null) {
-            gameUserData = ds.find(GameUserData.class).field("userId").equal(urlId).get();
+            gameUserData = ds.find(GameUserData.class).field("userId").equal(userId).get();
         } else {
             LOGGER.error("unable to access to mongoDb: datastore is unknown: ");
         }
@@ -135,65 +135,65 @@ public class GameUserDataManager {
         return result;
     }
 
-    public void registerUser(String urlId) {
+    public void registerUser(Long userId) {
         GameUserData gameUserData = new GameUserData();
-        gameUserData.setUserId(urlId);
+        gameUserData.setUserId(userId);
         if (ds != null) {
             ds.save(gameUserData);
-            LOGGER.debug("user {} registered in mongoDb", urlId);
+            LOGGER.debug("user {} registered in mongoDb", userId);
         } else {
-            LOGGER.error("unable to save user {}: datastore is unknown: ", urlId);
+            LOGGER.error("unable to save user {}: datastore is unknown: ", userId);
         }
     }
 
-    public void cleanUser(String urlId) {
+    public void cleanUser(Long userId) {
         if (ds != null) {
-            GameUserData entity = ds.get(GameUserData.class, urlId);
+            GameUserData entity = ds.get(GameUserData.class, userId);
             if (entity != null) {
                 entity.setGames(new ArrayList<Game>());
                 ds.save(entity);
             }
-            LOGGER.debug("user {} has been cleanup in mongoDb", urlId);
+            LOGGER.debug("user {} has been cleanup in mongoDb", userId);
         } else {
-            LOGGER.error("unable to cleanup user {}: datastore is unknown: ", urlId);
+            LOGGER.error("unable to cleanup user {}: datastore is unknown: ", userId);
         }
     }
 
-    public void destroyUser(String urlId) {
+    public void destroyUser(Long userId) {
         if (ds != null) {
-            GameUserData entity = ds.get(GameUserData.class, urlId);
+            GameUserData entity = ds.get(GameUserData.class, userId);
             if (entity != null) {
                 ds.delete(entity);
             }
-            LOGGER.debug("user {} is destroyed from mongoDb", urlId);
+            LOGGER.debug("user {} is destroyed from mongoDb", userId);
         } else {
-            LOGGER.error("unable to destroy user {}: datastore is unknown: ", urlId);
+            LOGGER.error("unable to destroy user {}: datastore is unknown: ", userId);
         }
     }
 
-    public void addOrUpdateGame(String urlId, Game game) throws StorageException {
+    public void addOrUpdateGame(Long userId, Game game) throws StorageException {
         if (ds != null) {
-            GameUserData gameUserData = ds.find(GameUserData.class).field("userId").equal(urlId).get();
+            GameUserData gameUserData = ds.find(GameUserData.class).field("userId").equal(userId).get();
             if (gameUserData == null) {
-                LOGGER.error("insertion error: unable to find the user {}... the game {} will not be inserted", urlId, game);
-                throw new StorageException("unable to find user " + urlId);
+                LOGGER.error("insertion error: unable to find the user {}... the game {} will not be inserted", userId, game);
+                throw new StorageException("unable to find user " + userId);
             }
             gameUserData.addOrReplace(game);
             ds.save(gameUserData);
         } else {
-            LOGGER.error("unable to save game {} for user {}: datastore is unknown: ", game, urlId);
+            LOGGER.error("unable to save game {} for user {}: datastore is unknown: ", game, userId);
         }
 
         //UpdateOperations<User> ops = datastore.createUpdateOperations(User.class).set("lastLogin", now);
 //        ds.update(queryToFindMe(), ops);
     }
 
-    public GameResult getResult(String urlId) {
+    public GameResult getResult(Long userId) {
         GameResult result = new GameResult();
-        result.setUserId(urlId);
-        result.setNbSuccess(getGamesByResultType(urlId, ResponseType.SUCCESS).size());
-        result.setNbFail(getGamesByResultType(urlId, ResponseType.FAIL).size());
-        result.setNbInvalid(getGamesByResultType(urlId, ResponseType.INVALID).size());
+        result.setUserId(userId);
+        result.setNbSuccess(getGamesByResultType(userId, ResponseType.SUCCESS).size());
+        result.setNbFail(getGamesByResultType(userId, ResponseType.FAIL).size());
+        result.setNbInvalid(getGamesByResultType(userId, ResponseType.INVALID).size());
         return result;
     }
 

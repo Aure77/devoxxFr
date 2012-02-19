@@ -48,6 +48,8 @@ public class GameUserDataManagerTest {
 
 //    @Inject
     private GameUserDataManager gameUserDataManager = new GameUserDataManager();
+    
+    private static final Long TEST_USERID = 1L;
 
     @Before
     public void setUp() {
@@ -68,7 +70,7 @@ public class GameUserDataManagerTest {
         gameUserDataManager.ds = ds;
 
         //when
-        gameUserDataManager.registerUser("user1");
+        gameUserDataManager.registerUser(TEST_USERID);
         //then
         verify(ds).save(any(GameUserData.class));
     }
@@ -77,7 +79,7 @@ public class GameUserDataManagerTest {
     public void addGameWithAnUnknownUserShouldFail() throws Exception {
         //given
         GameUserData gameUserData = new GameUserData();
-        gameUserData.setUserId("use");
+        gameUserData.setUserId(18L);
 
         Datastore ds = mock(Datastore.class);
         Query<GameUserData> query = mock(Query.class);
@@ -94,7 +96,7 @@ public class GameUserDataManagerTest {
         game.setType(ResponseType.SUCCESS);
 
         //when
-        gameUserDataManager.addOrUpdateGame("use", game);
+        gameUserDataManager.addOrUpdateGame(18L, game);
 //        verify(ds).save();
     }
 
@@ -102,7 +104,7 @@ public class GameUserDataManagerTest {
     public void addGameShouldSuccess() throws StorageException {
         //given
         GameUserData gameUserData = mock(GameUserData.class);
-        when(gameUserData.getUserId()).thenReturn("user1");
+        when(gameUserData.getUserId()).thenReturn(TEST_USERID);
 
         Datastore ds = mock(Datastore.class);
         Query<GameUserData> query = mock(Query.class);
@@ -120,7 +122,7 @@ public class GameUserDataManagerTest {
         game.setType(ResponseType.SUCCESS);
 
         //when
-        gameUserDataManager.addOrUpdateGame("user1", game);
+        gameUserDataManager.addOrUpdateGame(TEST_USERID, game);
 
         //then
         verify(gameUserData, times(1)).addOrReplace(game);
@@ -131,7 +133,7 @@ public class GameUserDataManagerTest {
     public void getGamesShouldReturnAllPlayedGamesForASpecificUser() throws StorageException {
         //given
         GameUserData gameUserData = mock(GameUserData.class);
-        when(gameUserData.getUserId()).thenReturn("user1");
+        when(gameUserData.getUserId()).thenReturn(TEST_USERID);
 
         Datastore ds = mock(Datastore.class);
         Query<GameUserData> query = mock(Query.class);
@@ -141,7 +143,7 @@ public class GameUserDataManagerTest {
 
         gameUserDataManager.ds = ds;
         when(query.field("userId")).thenReturn(fieldEnd);
-        when(fieldEnd.equal("user1")).thenReturn(query2);
+        when(fieldEnd.equal(TEST_USERID)).thenReturn(query2);
         when(query2.get()).thenReturn(gameUserData);
         when(ds.find(GameUserData.class)).thenReturn(query);
 
@@ -164,7 +166,7 @@ public class GameUserDataManagerTest {
         when(gameUserData.getGames()).thenReturn(Lists.newArrayList(game1, game2, game3));
 
         //then
-        List<Game> games = gameUserDataManager.getGames("user1");
+        List<Game> games = gameUserDataManager.getGames(TEST_USERID);
         assertTrue(games.size() == 3);
         assertTrue(games.get(0).getId() == 1);
         assertTrue(games.get(1).getId() == 2);
@@ -175,7 +177,7 @@ public class GameUserDataManagerTest {
     public void getGamesByResponseTypeShouldSuccess() throws StorageException {
         //given
         GameUserData gameUserData = mock(GameUserData.class);
-        when(gameUserData.getUserId()).thenReturn("user1");
+        when(gameUserData.getUserId()).thenReturn(TEST_USERID);
 
 //        GameUserData gameUserData2 = mock(GameUserData.class);
 //        when(gameUserData2.getName()).thenReturn("user2");
@@ -188,7 +190,7 @@ public class GameUserDataManagerTest {
 
         gameUserDataManager.ds = ds;
         when(query.field("userId")).thenReturn(fieldEnd);
-        when(fieldEnd.equal("user1")).thenReturn(query2);
+        when(fieldEnd.equal(TEST_USERID)).thenReturn(query2);
         when(query2.field("games.type")).thenReturn(fieldEnd2);
         when(fieldEnd2.contains("SUCCESS")).thenReturn(query2);
         when(query2.asList()).thenReturn(Lists.newArrayList(gameUserData));
@@ -222,16 +224,16 @@ public class GameUserDataManagerTest {
         when(gameUserData.getGames()).thenReturn(Lists.newArrayList(game1, game2, game3));
 
         //then
-        List<Game> games = gameUserDataManager.getGamesByResultType("user1", ResponseType.SUCCESS);
+        List<Game> games = gameUserDataManager.getGamesByResultType(TEST_USERID, ResponseType.SUCCESS);
         assertTrue(games.size() == 2);
         assertTrue(games.get(0).getId() == 1);
         assertTrue(games.get(1).getId() == 3);
 
-        games = gameUserDataManager.getGamesByResultType("user1", ResponseType.FAIL);
+        games = gameUserDataManager.getGamesByResultType(TEST_USERID, ResponseType.FAIL);
         assertTrue(games.size() == 1);
         assertTrue(games.get(0).getId() == 2);
 
-        games = gameUserDataManager.getGamesByResultType("user1", ResponseType.INVALID);
+        games = gameUserDataManager.getGamesByResultType(TEST_USERID, ResponseType.INVALID);
         assertTrue(games.size() == 0);
     }
 }

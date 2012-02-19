@@ -75,7 +75,7 @@ public class UserRequestDto implements Serializable {
     @Override
     public String toString() {
         return "UserRequestDto{" +
-//                "token='" + token + '\'' +
+                "urlId='" + urlId + '\'' +
                 ", name='" + name + '\'' +
                 ", mail='" + mail + '\'' +
                 '}';

@@ -40,7 +40,7 @@ import java.util.ArrayList;
 @Entity("gameUserData")
 public class GameUserData {
     @Id
-    private String userId;
+    private Long userId;
 
 //    private ObjectId id;
     private int score = 0;
@@ -78,11 +78,11 @@ public class GameUserData {
         this.games = games;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

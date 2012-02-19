@@ -145,7 +145,7 @@ public class AdminUserService {
             em.getTransaction().commit();
             LOGGER.debug("User creation successful: {}", userRequestDto);
 
-            this.gameUserDataManager.registerUser(userRequestDto.getUrlId());
+            this.gameUserDataManager.registerUser(user.getId());
 
             return dozerMapper.map(user, UserResponseDto.class);
         } finally {
@@ -153,22 +153,22 @@ public class AdminUserService {
         }
     }
 
-    @Path("/{urlId}")
+    @Path("/{userId}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public UserResponseDto getUser(@PathParam("urlId") String urlId) {
+    public UserResponseDto getUser(@PathParam("userId") Long userId) {
         try {
             init();
 //			List<User> users = getUsers(em, userName);
-            User user = getUserById(urlId);
+            User user = getUserById(userId);
 
             if (null != user) {
-                LOGGER.debug("get user {} successful", urlId);
+                LOGGER.debug("get user {} successful", userId);
                 UserResponseDto response = dozerMapper.map(user, UserResponseDto.class);
                 response.setToken(null);
                 return response;
             } else {
-                LOGGER.debug("get user {} failed: not found", urlId);
+                LOGGER.debug("get user {} failed: not found", userId);
                 throw new WebApplicationException(Status.NOT_FOUND);
             }
         } catch (PersistenceException e) {
@@ -179,31 +179,31 @@ public class AdminUserService {
         }
     }
 
-    @Path("/{urlId}/games")
+    @Path("/{userId}/games")
     @DELETE
-    public void cleanUserGames(@PathParam("urlId") String urlId) {
-        this.gameUserDataManager.cleanUser(urlId);
+    public void cleanUserGames(@PathParam("userId") Long userId) {
+        this.gameUserDataManager.cleanUser(userId);
     }
 
-    @Path("/{urlId}")
+    @Path("/{userId}")
     @DELETE
-    public void deleteUser(@PathParam("urlId") String urlId) {
+    public void deleteUser(@PathParam("userId") Long userId) {
         try {
             init();
 //			List<User> users = getUsers(em, userName);
-            User user = getUserById(urlId);
+            User user = getUserById(userId);
 
             if (null != user) {
                 em.getTransaction().begin();
                 em.remove(user);
                 em.getTransaction().commit();
             } else {
-                LOGGER.debug("delete user {} failed: not found", urlId);
+                LOGGER.debug("delete user {} failed: not found", userId);
                 throw new WebApplicationException(Status.NOT_FOUND);
             }
-            this.gameUserDataManager.destroyUser(urlId);
+            this.gameUserDataManager.destroyUser(userId);
 
-            LOGGER.debug("delete user {} successful", urlId);
+            LOGGER.debug("delete user {} successful", userId);
         } catch (PersistenceException e) {
             LOGGER.debug("delete user failed: PersistenceException", e);
 //			throw new WebApplicationException(Status.NOT_FOUND);
@@ -221,29 +221,29 @@ public class AdminUserService {
                  .setParameter("name", userName).getResultList();
      }*/
 
-    private User getUserById(String urlId) throws PersistenceException {
-        return (User) em.createQuery("select g from User g where g.urlId = :urlId")
-                .setParameter("urlId", urlId).getSingleResult();
+    private User getUserById(Long userId) throws PersistenceException {
+        return (User) em.createQuery("select u from User u where u.id = :id")
+                .setParameter("id", userId).getSingleResult();
 //        CriteriaQuery<User> criteriaQuery = createSimpleUserCriteriaQuery(em,
 //                userName);
 //                return em.createQuery(criteriaQuery).setParameter("name",
 //                userName).getSingleResult();
     }
 
-    private CriteriaQuery<User> createSimpleUserCriteriaQuery(EntityManager em,
-                                                              String userName) {
-        // List<User> users = em.createQuery(
-        // "select g from User g where g.name = :name")
-        // .setParameter("name", userName).getResultList();
-
-        CriteriaBuilder queryBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<User> criteriaQuery = queryBuilder
-                .createQuery(User.class);
-
-        Root<User> root = criteriaQuery.from(User.class);
-
-        criteriaQuery.select(root).where(
-                queryBuilder.equal(root.get("name"), userName));
-        return criteriaQuery;
-    }
+//    private CriteriaQuery<User> createSimpleUserCriteriaQuery(EntityManager em,
+//                                                              String userName) {
+//        // List<User> users = em.createQuery(
+//        // "select g from User g where g.name = :name")
+//        // .setParameter("name", userName).getResultList();
+//
+//        CriteriaBuilder queryBuilder = em.getCriteriaBuilder();
+//        CriteriaQuery<User> criteriaQuery = queryBuilder
+//                .createQuery(User.class);
+//
+//        Root<User> root = criteriaQuery.from(User.class);
+//
+//        criteriaQuery.select(root).where(
+//                queryBuilder.equal(root.get("name"), userName));
+//        return criteriaQuery;
+//    }
 }

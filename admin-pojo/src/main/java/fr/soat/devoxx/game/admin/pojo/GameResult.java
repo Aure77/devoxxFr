@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "gameResult")
 public class GameResult {
-	private String userId;
+	private Long userId;
     private int nbSuccess = 0;
     private int nbFail = 0;
     private int nbInvalid = 0;
@@ -64,11 +64,11 @@ public class GameResult {
         this.nbInvalid = nbInvalid;
     }
 
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 }

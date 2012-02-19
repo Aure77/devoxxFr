@@ -116,11 +116,11 @@ public class AdminQuestionService {
         return javax.ws.rs.core.Response.ok().build();
     }
 
-    @Path("/{username}")
+    @Path("/{userId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public AllQuestionResponseDto getAllQuestions(@PathParam("username") String username) {
-        List<Game> games = gameUserDataManager.getGamesByResultType(username, ResponseType.NEED_RESPONSE);
+    public AllQuestionResponseDto getAllQuestions(@PathParam("userId") Long userId) {
+        List<Game> games = gameUserDataManager.getGamesByResultType(userId, ResponseType.NEED_RESPONSE);
         AllQuestionResponseDto results = new AllQuestionResponseDto();
         for (Game game : games) {
             results.addQuestion(dozerMapper.map(questionManager.loadQuestions().getQuestionById(game.getId()), QuestionResponseDto.class));
@@ -128,7 +128,7 @@ public class AdminQuestionService {
         return results;
     }
 
-    @Path("/{username}/reply")
+    @Path("/{userId}/reply")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -158,7 +158,7 @@ public class AdminQuestionService {
             }
         }
 
-        Game game = gameUserDataManager.getGameById(responseDto.getUserName(), res.getId());
+        Game game = gameUserDataManager.getGameById(responseDto.getUserId(), res.getId());
 
         if (game == null) {
             game = new Game();
@@ -167,7 +167,7 @@ public class AdminQuestionService {
         game.setGivenAnswers(response.getAnswer());
         game.setType(response.getResponseType());
         try {
-            gameUserDataManager.addOrUpdateGame(responseDto.getUserName(), game);
+            gameUserDataManager.addOrUpdateGame(responseDto.getUserId(), game);
         } catch (StorageException e) {
             LOGGER.error("unable to store result in mongoDb: {}", e.getMessage());
         }
@@ -175,10 +175,10 @@ public class AdminQuestionService {
         return response;
     }
 
-    @Path("/{username}/create")
+    @Path("/{userId}/create")
     @PUT
-    public javax.ws.rs.core.Response addQuestionForUser(@PathParam("username") String userName) {
-        List<Game> gamesAllReadyPlayed = gameUserDataManager.getGames(userName);
+    public javax.ws.rs.core.Response addQuestionForUser(@PathParam("userId") Long userId) {
+        List<Game> gamesAllReadyPlayed = gameUserDataManager.getGames(userId);
         List<Question> allQuestions = questionManager.loadQuestions().getQuestions();
 
         if (gamesAllReadyPlayed.size() == allQuestions.size()) {
@@ -193,7 +193,7 @@ public class AdminQuestionService {
         game.setType(ResponseType.NEED_RESPONSE);
 
         try {
-            gameUserDataManager.addOrUpdateGame(userName, game);
+            gameUserDataManager.addOrUpdateGame(userId, game);
         } catch (StorageException e) {
             LOGGER.error("unable to store result in mongoDb: {}", e.getMessage());
         }

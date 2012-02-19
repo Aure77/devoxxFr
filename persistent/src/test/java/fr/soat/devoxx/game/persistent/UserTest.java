@@ -64,9 +64,12 @@ public class UserTest {
 
     @Before
     public void initDb() {
+    	
         em.getTransaction().begin();
-        User user1 = new User("toto", "toto@toto.com");
-        User user2 = new User("titi", "titi@titi.com");
+        User user1 = new User("http://toto.myopenid.com/", "toto@toto.com");
+        user1.setId(1L);
+        User user2 = new User("http://openid.aol.com/titi", "titi@titi.com");
+        user2.setId(2L);
         User[] users = new User[]{user1, user2};
         for (User g : users) {
             em.persist(g);
@@ -80,9 +83,9 @@ public class UserTest {
     @After
     public void cleanDb() {
         em.getTransaction().begin();
-        User userx = em.find(User.class, "toto");
+        User userx = em.find(User.class, 1L);
         em.remove(userx);
-        userx = em.find(User.class, "titi");
+        userx = em.find(User.class, 2L);
         em.remove(userx);
         em.getTransaction().commit();
     }
@@ -91,10 +94,10 @@ public class UserTest {
     public void theDbReadShouldSuccess() {
         User user = (User) em.createQuery(
                 "select g from User g where g.urlId = :urlId")
-                .setParameter("urlId", "toto").getSingleResult();
+                .setParameter("urlId", "http://toto.myopenid.com/").getSingleResult();
         assertNotNull(user);
         assertEquals(user.getMail(), "toto@toto.com");
-        assertEquals(user.getUrlId(), "toto");
+        assertEquals(user.getUrlId(), "http://toto.myopenid.com/");
 //        System.out.println("Query returned: " + user);
     }
 
@@ -116,13 +119,15 @@ public class UserTest {
     @Test
     public void anInvalidNameShouldBeChecked() {
         User user = new User();
+        user.setId(3L);
         user.setUrlId("to");
         user.setMail("toto@toto.com");
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         assertEquals(1, constraintViolations.size());
         assertEquals("{javax.validation.constraints.Size.message}", constraintViolations.iterator().next().getMessageTemplate());
 
-        User user1 = new User(null, "toto@toot.com");
+        User user1 = new User(null, "toto@toto.com");
+        user1.setId(4L);
         constraintViolations = validator.validate(user1);
         assertEquals(1, constraintViolations.size());
         assertEquals("{javax.validation.constraints.NotNull.message}", constraintViolations.iterator().next().getMessageTemplate());
@@ -131,7 +136,8 @@ public class UserTest {
     @Test
     public void anValidUserShouldSuccess() {
         User user = new User();
-        user.setUrlId("toto");
+        user.setId(3L);
+        user.setUrlId("http://toto.myopenid.com/");
         user.setMail("toto@toto.com");
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
         assertEquals(0, constraintViolations.size());

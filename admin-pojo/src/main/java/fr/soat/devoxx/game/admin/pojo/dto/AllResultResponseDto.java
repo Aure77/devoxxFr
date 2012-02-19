@@ -30,6 +30,7 @@ import java.util.List;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import fr.soat.devoxx.game.pojo.ResultResponseDto;
@@ -65,8 +66,8 @@ public class AllResultResponseDto {
 			Iterator<ResultResponseDto> iterator = gameResults.iterator();
 			while (iterator.hasNext()) {
 				ResultResponseDto resultResponse = iterator.next();
-				if (StringUtils.isEmpty(resultResponse.getUserId())) {
-					// a GameResult without username is considered invalid
+				if (null != resultResponse.getUserId() && resultResponse.getUserId() < 1) {
+					// a GameResult without UserId is considered invalid
 					iterator.remove();
 				}
 			}
