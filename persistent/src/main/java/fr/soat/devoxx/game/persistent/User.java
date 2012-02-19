@@ -25,10 +25,14 @@ package fr.soat.devoxx.game.persistent;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -43,11 +47,12 @@ import fr.soat.devoxx.game.persistent.util.UserUtils;
 // @XmlRootElement(name = "user")
 @Entity
 public class User implements Serializable {
-	// @Id
-	// @GeneratedValue
-	// private int id;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(unique = true)
 	@NotNull
 	@Size(min = 4)
 	private String urlId;
@@ -55,7 +60,7 @@ public class User implements Serializable {
 	// @Id
 	// @NotNull
 	// @Size(min = 4)
-	private String fullname;
+	private String name;
 
 	// @Pattern(regexp = "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b")
 	// @Pattern(regexp = "[\\w-]+@([\\w-]+\\.)+[\\w-]+")
@@ -73,19 +78,19 @@ public class User implements Serializable {
 		generateUserToken();
 		generateUsername();
 	}
-	
+
 	@PreUpdate
 	void onPreUpdate() {
 		generateUsername();
 	}
-	
+
 	private void generateUserToken() {
 		this.setToken(UserUtils.INSTANCE.generateToken());
 	}
 
 	private void generateUsername() {
-		if(StringUtils.isEmpty(fullname))
-			this.setFullname(UserUtils.INSTANCE.generateRandomUsername());
+		if (StringUtils.isEmpty(name))
+			this.setName(UserUtils.INSTANCE.generateRandomUsername());
 	}
 
 	public void setToken(String token) {
@@ -104,12 +109,12 @@ public class User implements Serializable {
 		this.mail = mail;
 	}
 
-	public String getFullname() {
-		return this.fullname;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setFullname(String fullname) {
-		this.fullname = fullname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getUrlId() {
@@ -120,6 +125,14 @@ public class User implements Serializable {
 		this.urlId = urlId;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public User() {
 	}
 
@@ -127,11 +140,16 @@ public class User implements Serializable {
 		this.mail = mail;
 		this.urlId = urlId;
 	}
+	
+	public User(String urlId, String mail, String name) {
+		this.mail = mail;
+		this.urlId = urlId;
+		this.name = name;
+	}
 
 	@Override
 	public String toString() {
-		return "User{" + "urlId='" + urlId + '\'' + "fullname='" + fullname + '\'' + ", mail='" + mail + '\''
-		        + (StringUtils.isEmpty(token) ? ", token=<none>" : (", token='" + token + '\'')) + '}';
+		return "User{" + " id='" + id + "'" + ", urlId='" + urlId + "'" + ", name='" + name + "'" + ", mail='" + mail + "'"
+		        + (StringUtils.isEmpty(token) ? ", token=<none>" : (", token='" + token + "'")) + '}';
 	}
-
 }
