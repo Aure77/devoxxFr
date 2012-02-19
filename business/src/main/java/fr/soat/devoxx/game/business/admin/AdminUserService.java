@@ -225,12 +225,6 @@ public class AdminUserService {
 //                userName).getSingleResult();
     }
 
-	@Override
-    protected void finalize() throws Throwable {
-	    close();
-	    super.finalize();
-    }
-
 //    private CriteriaQuery<User> createSimpleUserCriteriaQuery(EntityManager em,
 //                                                              String userName) {
 //        // List<User> users = em.createQuery(
