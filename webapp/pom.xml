@@ -115,57 +115,33 @@ as the API is included in JBoss AS 7 -->
 
     <profiles>
         <profile>
-            <id>cloudbees-jee</id>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 
             <properties>
-                <environment>cloudbees-jetoile</environment>
+                <environment>dev</environment>
             </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>true</filtering>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                </resources>
+                <filters>
+                    <filter>src/main/filters/filter-${environment}.properties</filter>
+                </filters>
+            </build>
 
-            <dependencies>
-                <dependency>
-                    <groupId>org.hibernate.javax.persistence</groupId>
-                    <artifactId>hibernate-jpa-2.0-api</artifactId>
-                    <version>${version.org.hibernate.javax.persistence}</version>
-                    <scope>provided</scope>
-                </dependency>
+        </profile>
 
-                <dependency>
-                    <groupId>org.jboss.spec.javax.servlet</groupId>
-                    <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-                    <version>${version.org.jboss.spec.javax.servlet}</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>javax.enterprise</groupId>
-                    <artifactId>cdi-api</artifactId>
-                    <scope>provided</scope>
-                </dependency>
-
-                <!-- Import the Common Annotations API (JSR-250), we use provided scope
-       as the API is included in JBoss AS 7 -->
-                <dependency>
-                    <groupId>org.jboss.spec.javax.annotation</groupId>
-                    <artifactId>jboss-annotations-api_1.1_spec</artifactId>
-                    <version>${version.org.jboss.spec.javax.annotation}</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <!-- Import the JAX-RS API, we use provided scope as the API is included
-            in JBoss AS 7 -->
-                <dependency>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                    <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
-                    <version>${version.org.jboss.spec.javax.xml.registry}</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
+        <profile>
+            <id>cloudbees-soat</id>
+            <properties>
+                <environment>cloudbees-soat</environment>
+            </properties>
 
             <build>
                 <plugins>
@@ -199,16 +175,35 @@ as the API is included in JBoss AS 7 -->
                 </filters>
             </build>
         </profile>
+        
         <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+            <id>cloudbees-jee</id>
 
             <properties>
-                <environment>dev</environment>
+                <environment>cloudbees-jetoile</environment>
             </properties>
+
             <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <webResources>
+                                <webResource>
+                                    <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                                    <includes>
+                                        <include>*.xml</include>
+                                    </includes>
+                                    <targetPath>WEB-INF</targetPath>
+                                    <filtering>true</filtering>
+                                </webResource>
+                            </webResources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+
                 <resources>
                     <resource>
                         <filtering>true</filtering>
@@ -219,13 +214,13 @@ as the API is included in JBoss AS 7 -->
                     <filter>src/main/filters/filter-${environment}.properties</filter>
                 </filters>
             </build>
-
         </profile>
-
+        
         <profile>
-            <id>cloudbees-soat</id>
+            <id>cloudbees-aure77</id>
+
             <properties>
-                <environment>cloudbees-soat</environment>
+                <environment>cloudbees-aure77</environment>
             </properties>
 
             <build>
