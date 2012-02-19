@@ -87,12 +87,14 @@ public class AdminUserService {
     }
 
     public AdminUserService() {
+    	init();
     }
 
     AdminUserService(String persistenceUnitName,
                      GameUserDataManager gameUserDataManager) {
         this.PERSISTENCE_UNIT_NAME = persistenceUnitName;
         this.gameUserDataManager = gameUserDataManager;
+        init();
     }
 
     private void close() {
@@ -107,15 +109,15 @@ public class AdminUserService {
     public AllUserResponseDto getAllUsers() {
         AllUserResponseDto allUsersDto = new AllUserResponseDto();
         try {
-            init();
             @SuppressWarnings("unchecked")
             List<User> users = em.createQuery("from User u").getResultList();
             for (User user : users) {
                 allUsersDto.addUserResponse(this.dozerMapper.map(user, UserResponseDto.class));
             }
-        } finally {
-            close();
-        }
+        } catch (RuntimeException e) {
+        	LOGGER.debug("Get all users failed", e);
+			throw new WebApplicationException(Status.BAD_REQUEST);
+		}
         return allUsersDto;
     }
 
@@ -125,7 +127,6 @@ public class AdminUserService {
     public UserResponseDto createUser(UserRequestDto userRequestDto)
             throws InvalidUserException {
         try {
-            init();
             User user = dozerMapper.map(userRequestDto, User.class);
 
             Set<ConstraintViolation<User>> constraintViolations = validator
@@ -148,9 +149,10 @@ public class AdminUserService {
             this.gameUserDataManager.registerUser(user.getId());
 
             return dozerMapper.map(user, UserResponseDto.class);
-        } finally {
-            close();
-        }
+        } catch (RuntimeException e) {
+        	LOGGER.debug("Post new user failed", e);
+			throw new WebApplicationException(Status.BAD_REQUEST);
+		}
     }
 
     @Path("/{userId}")
@@ -158,8 +160,6 @@ public class AdminUserService {
     @Produces({MediaType.APPLICATION_JSON})
     public UserResponseDto getUser(@PathParam("userId") Long userId) {
         try {
-            init();
-//			List<User> users = getUsers(em, userName);
             User user = getUserById(userId);
 
             if (null != user) {
@@ -174,8 +174,6 @@ public class AdminUserService {
         } catch (PersistenceException e) {
             LOGGER.debug("get user failed: PersistenceException", e);
             throw new WebApplicationException(Status.NOT_FOUND);
-        } finally {
-            close();
         }
     }
 
@@ -189,7 +187,6 @@ public class AdminUserService {
     @DELETE
     public void deleteUser(@PathParam("userId") Long userId) {
         try {
-            init();
 //			List<User> users = getUsers(em, userName);
             User user = getUserById(userId);
 
@@ -207,8 +204,6 @@ public class AdminUserService {
         } catch (PersistenceException e) {
             LOGGER.debug("delete user failed: PersistenceException", e);
 //			throw new WebApplicationException(Status.NOT_FOUND);
-        } finally {
-            close();
         }
     }
 
@@ -230,6 +225,12 @@ public class AdminUserService {
 //                userName).getSingleResult();
     }
 
+	@Override
+    protected void finalize() throws Throwable {
+	    close();
+	    super.finalize();
+    }
+
 //    private CriteriaQuery<User> createSimpleUserCriteriaQuery(EntityManager em,
 //                                                              String userName) {
 //        // List<User> users = em.createQuery(
@@ -246,4 +247,5 @@ public class AdminUserService {
 //                queryBuilder.equal(root.get("name"), userName));
 //        return criteriaQuery;
 //    }
+    
 }
