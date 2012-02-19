@@ -49,7 +49,7 @@ import fr.soat.devoxx.game.persistent.util.UserUtils;
 public class User implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Column(unique = true)
